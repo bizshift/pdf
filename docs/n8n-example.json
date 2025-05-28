@@ -1,0 +1,87 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "convert-html",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://localhost:3000/api/n8n/convert",
+        "authentication": "headerAuth",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.PDF_MASTER_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "{\n  \"html_content\": \"{{$json.htmlContent}}\",\n  \"output_format\": \"pdf\",\n  \"return_type\": \"url\",\n  \"document_name\": \"{{$json.filename}}.pdf\"\n}"
+      },
+      "name": "PDF Master API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "=notifications@yourdomain.com",
+        "toEmail": "={{$json.recipientEmail}}",
+        "subject": "Your PDF Document is Ready",
+        "text": "=Hello,\n\nYour PDF document is ready to download using the following link:\n\n{{$node[\"PDF Master API\"].json[\"pdf_url\"]}}\n\nThis link will expire on {{$node[\"PDF Master API\"].json[\"expires_at\"]}}.\n\nThank you for using our service!\n",
+        "options": {}
+      },
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "PDF Master API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF Master API": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

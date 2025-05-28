@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  pdfmaster:
+    build: .
+    container_name: pdfmaster
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - SMTP_HOST=${SMTP_HOST:-smtp.example.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-user}
+      - SMTP_PASS=${SMTP_PASS:-password}
+      - SMTP_FROM=${SMTP_FROM:-noreply@example.com}
+      - BASE_URL=${BASE_URL:-http://localhost:3000}
+    volumes:
+      - pdf_storage:/app/storage
+    restart: unless-stopped
+
+volumes:
+  pdf_storage:

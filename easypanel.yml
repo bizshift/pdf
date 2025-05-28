@@ -1,0 +1,33 @@
+services:
+  pdfmaster:
+    source:
+      type: image
+      image: ${IMAGE}
+    domains:
+      - ${PRIMARY_DOMAIN}
+      - ${ROOT_DOMAIN}
+    ports:
+      - 3000
+    env:
+      - name: PORT
+        value: 3000
+      - name: NODE_ENV
+        value: production
+      - name: SMTP_HOST
+        value: ${SMTP_HOST}
+      - name: SMTP_PORT
+        value: ${SMTP_PORT}
+      - name: SMTP_USER
+        value: ${SMTP_USER}
+      - name: SMTP_PASS
+        value: ${SMTP_PASS}
+      - name: SMTP_FROM
+        value: ${SMTP_FROM}
+      - name: BASE_URL
+        value: https://${PRIMARY_DOMAIN}
+    volumes:
+      - name: pdf-storage
+        path: /app/storage
+    resources:
+      cpu: 1000
+      memory: 1024
