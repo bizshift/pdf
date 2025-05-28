@@ -55,21 +55,6 @@ const upload = multer({
 const app = express();
 const port = process.env.PORT || 3000;
 
-// CORS configuration
-const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:5173', process.env.FRONTEND_URL];
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true
-}));
-
 // Apply rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -79,6 +64,7 @@ const limiter = rateLimit({
 });
 
 // Apply middleware
+app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(limiter);
@@ -163,18 +149,15 @@ app.post('/api/convert', async (req, res) => {
     // Generate download link
     const link = generateDownloadLink(fileId, expirationDays || 7);
     
-    // Base URL for download and link URLs
-    const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
-    
     // Log the conversion
     console.log(`PDF generated: ${fileId}.pdf`);
     
     res.status(200).json({
       success: true,
       fileId,
-      downloadLink: `${baseUrl}/api/download/${fileId}`,
+      downloadLink: `/api/download/${fileId}`,
       linkId: link.linkId,
-      linkUrl: `${baseUrl}/link/${link.linkId}`,
+      linkUrl: link.url,
       expiresAt: link.expiresAt,
     });
   } catch (error) {
@@ -264,7 +247,6 @@ app.post('/api/send-email', (req, res) => {
     
     // Generate download link
     const link = generateDownloadLink(fileId, 7);
-    const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
     
     // Send email
     const mailOptions = {
@@ -275,7 +257,7 @@ app.post('/api/send-email', (req, res) => {
         <div style="font-family: Arial, sans-serif; max-width: 600px;">
           <h2 style="color: #1E40AF;">Your PDF Document is Ready</h2>
           <p>You can download your document using the link below:</p>
-          <p><a href="${baseUrl}${link.url}" style="display: inline-block; background-color: #1E40AF; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Download Document</a></p>
+          <p><a href="${process.env.BASE_URL || 'http://localhost:3000'}${link.url}" style="display: inline-block; background-color: #1E40AF; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Download Document</a></p>
           <p style="margin-top: 20px;">This link will expire in 7 days.</p>
           ${message ? `<p style="margin-top: 20px; padding: 10px; background-color: #f3f4f6; border-left: 4px solid #d1d5db;">Message: ${message}</p>` : ''}
           <p style="margin-top: 30px; font-size: 12px; color: #6b7280;">This is an automated message, please do not reply.</p>
@@ -287,15 +269,13 @@ app.post('/api/send-email', (req, res) => {
     console.log('Email would be sent with:', mailOptions);
     
     // In a real app, you would uncomment this:
-    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-      emailTransporter.sendMail(mailOptions);
-    }
+    // emailTransporter.sendMail(mailOptions);
     
     res.status(200).json({
       success: true,
       message: 'Email sent successfully',
       linkId: link.linkId,
-      linkUrl: `${baseUrl}${link.url}`,
+      linkUrl: link.url,
     });
   } catch (error) {
     console.error('Email sending error:', error);
@@ -347,7 +327,7 @@ app.post('/api/n8n/convert', async (req, res) => {
     
     // Generate download link
     const link = generateDownloadLink(fileId, 7);
-    const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
     
     // Log the conversion
     console.log(`PDF generated via n8n: ${fileId}.pdf`);
@@ -373,10 +353,19 @@ app.post('/api/n8n/convert', async (req, res) => {
   }
 });
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+// Serve frontend assets in production
+if (process.env.NODE_ENV === 'production') {
+  const distPath = path.join(__dirname, '..', 'dist');
+  app.use(express.static(distPath));
+  
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    // Exclude API routes
+    if (!req.path.startsWith('/api/')) {
+      res.sendFile(path.join(distPath, 'index.html'));
+    }
+  });
+}
 
 // Start server
 app.listen(port, () => {

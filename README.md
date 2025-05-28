@@ -1,13 +1,6 @@
-# PDFMaster
+# HTML to PDF Conversion System
 
 A professional system that converts HTML content to PDF documents with secure storage, download links, and email delivery.
-
-## Project Structure
-
-This project is divided into two main components:
-
-1. **Frontend**: React application for user interface (in the `frontend` directory)
-2. **Backend**: Node.js API for PDF conversion and management (in the `backend` directory)
 
 ## Features
 
@@ -19,52 +12,64 @@ This project is divided into two main components:
 - Template system for common document types
 - Responsive web interface
 
-## Branches
+## Tech Stack
 
-- `main`: Contains the original monolithic application
-- `front`: Contains the separated frontend and backend components
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **Backend**: Node.js, Express
+- **PDF Generation**: Puppeteer
+- **Email**: Nodemailer
+- **Security**: UUID for secure links, rate limiting
 
-## Prerequisites
+## Getting Started
 
-- Node.js 18+ and npm
-- Docker and Docker Compose (for containerized deployment)
-- SMTP server for email functionality
+### Prerequisites
 
-## Development Setup
+- Node.js 14+ and npm
 
-### Frontend
+### Installation
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### Backend
+1. Clone the repository
+2. Install dependencies:
 
 ```bash
-cd backend
 npm install
-npm run dev
 ```
 
-## EasyPanel Deployment
+3. Create a `.env` file with the following variables:
 
-This project includes separate EasyPanel configurations for frontend and backend deployments.
+```
+PORT=3000
+SMTP_HOST=your-smtp-host
+SMTP_PORT=587
+SMTP_USER=your-smtp-username
+SMTP_PASS=your-smtp-password
+SMTP_FROM=noreply@example.com
+BASE_URL=http://localhost:3000
+```
 
-### Backend Deployment
+### Running the Application
 
-1. Use `backend/easypanel.yml` for the API server
-2. Configure the required environment variables
+Start both the frontend and backend with:
 
-### Frontend Deployment
+```bash
+npm run dev:all
+```
 
-1. Use `frontend/easypanel.yml` for the React application
-2. Configure the `VITE_API_URL` to point to your backend API
+## Usage
 
-## API Documentation
+1. Navigate to the Convert page
+2. Enter or paste your HTML content
+3. Customize PDF options as needed
+4. Click "Convert to PDF"
+5. Download the generated PDF or share via secure link/email
 
-See `docs/api-guide.md` for detailed API documentation.
+## Security Features
+
+- Time-limited download links
+- Rate limiting for API endpoints
+- Download tracking
+- Access controls for file retrieval
+- Secure email delivery
 
 ## License
 

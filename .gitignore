@@ -1,13 +1,27 @@
-# Node.js dependencies
-node_modules
-npm-debug.log
-yarn-error.log
-package-lock.json
-yarn.lock
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Production build files
+node_modules
 dist
-build
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # Environment variables
 .env
@@ -16,31 +30,9 @@ build
 .env.test.local
 .env.production.local
 
-# Logs
-logs
-*.log
+# Storage
+storage/
+/storage/
 
-# Operating System files
-.DS_Store
-Thumbs.db
-
-# Editor directories and files
-.idea
-.vscode
-*.swp
-*.swo
-
-# Storage for generated PDFs and uploads
-storage/pdfs/*
-storage/uploads/*
-!storage/pdfs/.gitkeep
-!storage/uploads/.gitkeep
-
-# Coverage directory
-coverage
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Netlify files
-.netlify
+# Temporary files
+/tmp/
