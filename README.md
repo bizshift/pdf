@@ -1,6 +1,70 @@
-# HTML to PDF Conversion System
+# PDFMaster
 
 A professional system that converts HTML content to PDF documents with secure storage, download links, and email delivery.
+
+## Project Structure
+
+This project is divided into two main components:
+
+1. **Frontend**: React application for user interface
+2. **Backend**: Node.js API for PDF conversion and management
+
+## Prerequisites
+
+- Node.js 18+ and npm
+- Docker and Docker Compose (for containerized deployment)
+- SMTP server for email functionality
+
+## Local Development
+
+### Setting up the environment
+
+1. Clone the repository
+2. Create `.env` files:
+   - Copy `.env.frontend.example` to `.env` in the frontend directory
+   - Copy `.env.backend.example` to `.env` in the backend directory
+
+### Running the application
+
+```bash
+# For local development with both frontend and backend
+npm run dev:all
+
+# For frontend only
+npm run dev
+
+# For backend only
+npm run server
+```
+
+## EasyPanel Deployment
+
+This project uses separate EasyPanel configurations for frontend and backend deployments.
+
+### Backend Deployment
+
+1. Use `backend-easypanel.yml` for the API server
+2. Configure the following environment variables:
+   - `PORT`: 3000
+   - `NODE_ENV`: production
+   - `SMTP_HOST`: SMTP server address
+   - `SMTP_PORT`: SMTP port
+   - `SMTP_USER`: SMTP username
+   - `SMTP_PASS`: SMTP password
+   - `SMTP_FROM`: Sender email address
+   - `BASE_URL`: Backend URL
+   - `FRONTEND_URL`: Frontend URL
+   - `API_KEY`: API authentication key
+
+### Frontend Deployment
+
+1. Use `frontend-easypanel.yml` for the React application
+2. Configure the following environment variables:
+   - `VITE_API_URL`: URL of the backend API
+
+## API Endpoints
+
+See `docs/api-guide.md` for detailed API documentation.
 
 ## Features
 
@@ -11,65 +75,6 @@ A professional system that converts HTML content to PDF documents with secure st
 - Comprehensive document tracking
 - Template system for common document types
 - Responsive web interface
-
-## Tech Stack
-
-- **Frontend**: React, TypeScript, Tailwind CSS
-- **Backend**: Node.js, Express
-- **PDF Generation**: Puppeteer
-- **Email**: Nodemailer
-- **Security**: UUID for secure links, rate limiting
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 14+ and npm
-
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Create a `.env` file with the following variables:
-
-```
-PORT=3000
-SMTP_HOST=your-smtp-host
-SMTP_PORT=587
-SMTP_USER=your-smtp-username
-SMTP_PASS=your-smtp-password
-SMTP_FROM=noreply@example.com
-BASE_URL=http://localhost:3000
-```
-
-### Running the Application
-
-Start both the frontend and backend with:
-
-```bash
-npm run dev:all
-```
-
-## Usage
-
-1. Navigate to the Convert page
-2. Enter or paste your HTML content
-3. Customize PDF options as needed
-4. Click "Convert to PDF"
-5. Download the generated PDF or share via secure link/email
-
-## Security Features
-
-- Time-limited download links
-- Rate limiting for API endpoints
-- Download tracking
-- Access controls for file retrieval
-- Secure email delivery
 
 ## License
 
